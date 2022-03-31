@@ -48,7 +48,7 @@
 
     /**
      * Función que simula un menú para agregar un pasajero
-     * @return int
+     * @return array
      */
 
     function menuPasajero() {
@@ -377,5 +377,5 @@
                 break;
     
         }
-        
+
     } while($case <> 0);
