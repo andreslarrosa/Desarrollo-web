@@ -1,7 +1,9 @@
 <?php
 
+    // Creamos la clase Viaje
     class Viaje {
 
+        // Atributos privados de cada objeto
         private $codigo;
         private $destino;
         private $maxpasajeros;
@@ -9,6 +11,7 @@
 
         public function __construct($code,$dest,$maxPa,$pa)   {
 
+            // Construimos un objeto y le asignamos dichos atributos
             $this->codigo = $code;
             $this->destino = $dest;
             $this->maxpasajeros = $maxPa;
@@ -16,6 +19,7 @@
 
         }
 
+        // Funciones Get para recibir información del objeto
         public function getCodigo() {
             return $this->codigo;
         }
@@ -32,6 +36,7 @@
             return $this->pasajeros;
         }
 
+        // Funciones Set para modificar los atributos de dicho objeto
         public function setCodigo($codeN) {
             $this->codigo = $codeN;
         }
@@ -60,23 +65,22 @@
             $this->pasajeros[$numPasajero]['documento'] = $nuevoDocumento;
         }
 
+        // Función to string para mostrar información del viaje
+        // El cual no utilizo porque me pareció mejor mostrarlo de maneras distintas durante la ejecución del programa
         public function __toString() {
             return "Código de viaje: ". $this->codigo. "\nDestino del viaje: ". $this->destino. "\nCantidad máxima de pasajeros: ". $this->maxpasajeros. "\nCantidad de pasajeros: ". count($this->pasajeros);
         }
         
+        // Función que muestra la lista de pasajeros con sus datos
         public function listaDePasajeros() {
-            //print_r($this->pasajeros);
+
+            // En un principio usaba print_r, pero como no me gustaba como lo muestra decidí hacerlo manualmente
+            // print_r($this->pasajeros);
 
             for ($i = 0; $i < count($this->pasajeros); $i++) {
                 echo $i + 1 . ". ". $this->pasajeros[$i]['nombre']. " ". $this->pasajeros[$i]['apellido']. " - DNI: ". $this->pasajeros[$i]['documento']. "\n";
             }
 
         }
-
-    /*La empresa de Transporte de Pasajeros “Viaje Feliz” quiere registrar la información referente a sus viajes. 
-    De cada viaje se precisa almacenar el código del mismo, destino, cantidad máxima de pasajeros y los pasajeros del viaje.
-    Realice la implementación de la clase Viaje e implemente los métodos necesarios para modificar los atributos de dicha clase 
-    (incluso los datos de los pasajeros). Utilice un array que almacene la información correspondiente a los pasajeros. 
-    Cada pasajero es un array asociativo con las claves “nombre”, “apellido” y “numero de documento”.*/
 
     }

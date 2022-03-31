@@ -2,6 +2,7 @@
 
     include 'Viaje.php';
 
+    // Pasajeros de prueba 
     $pasajeroD1 = [ 'nombre' => "Juan",
                     'apellido' => "Lopez",
                     'documento' => 25643215];
@@ -20,8 +21,17 @@
 
     $pasajerosViaje1 = [$pasajeroD1, $pasajeroD2, $pasajeroD3, $pasajeroD4];
 
+    // Viaje de prueba
     $viaje1 = new Viaje(645165443651458, "La Pampa", 50, $pasajerosViaje1);
+
+    // El conjunto de viajes
     $viajes[0] = $viaje1;
+
+
+    /**
+     * Función que simula un menú de opciones y verifica su respuesta
+     * @return int
+     */
 
     function menu() {
 
@@ -35,6 +45,11 @@
 
         return ($respuesta);
     }
+
+    /**
+     * Función que simula un menú para agregar un pasajero
+     * @return int
+     */
 
     function menuPasajero() {
 
@@ -53,16 +68,18 @@
 
     }
 
-    $pasajeros = [];
 
-
+    // Programa Principal
 
     do {
     
+        // Ejecutamos el menú
         $case = menu();
 
+        // Realizamos la acción que se elija con el menú
         switch ($case) {
 
+            // Crear viaje
             case 1: 
     
                 echo "Ingrese el código de viaje: ";
@@ -71,6 +88,8 @@
                 $destinoViajeIng = trim(fgets(STDIN));
                 echo "Ingrese la cantidad máxima de pasajeros: ";
                 $cantMaxPasajerosIng = trim(fgets(STDIN));
+
+                // Nos aseguramos que la cantidad de pasajeros sea menor o igual a la cantidad máxima y que sea un número positivo o 0
                 do {
     
                     echo "Ingrese la cantidad de pasajeros: ";
@@ -88,34 +107,44 @@
     
                 } while ($cantPasajerosIng > $cantMaxPasajerosIng || $cantPasajerosIng < 0);
 
+                // Creamos un array pasajeros en caso de que se inserte 0 pasajeros para no generar errores
                 $pasajeros = [];
     
+                // En caso de haber creado pasajeros los guardamos en array que después vamos a asignarlos al viaje
                 for ($i = 0;$i < $cantPasajerosIng; $i++) {
                     $pasajeros[$i] = menuPasajero();
                 }
                 
+                // Creamos nuestro viaje con todos los datos recolectados
                 $viajes[count($viajes)] = new Viaje($codViajeIng, $destinoViajeIng, $cantMaxPasajerosIng, $pasajeros);
     
                 break;
     
             case 2:
     
+                // Modificar un viaje
                 do {
 
+                    // Menú con el que consultamos que viaje se desea modificar
                     echo "¿Qué viaje desea modificar?\n";
+
+                    // Presentamos todos los viajes
                     for ($i = 0; $i < count($viajes); $i++) {
                         echo $i + 1 . ". Destino: ". $viajes[$i]->getDestino(). " - Código: ". $viajes[$i]->getCodigo(). "\n";
                     }
                     echo "Opción: ";
                     $viajeAModificar = trim(fgets(STDIN));
 
+                    // Mensaje de error
                     if ($viajeAModificar < 1 || $viajeAModificar > count($viajes)) {
                         echo "No existe el viaje ". $viajeAModificar. "\n";
                     }
 
-                } while($viajeAModificar < 1 || $viajeAModificar > count($viajes));
+                } while($viajeAModificar < 1 || $viajeAModificar > count($viajes)); // Para asegurar una respuesta correcta
 
                 do {
+
+                    // Consultamos que desea modificar
                     echo "¿Qué desea modificar del viaje?\n";
                     echo "1) Código: ". $viajes[$viajeAModificar - 1]->getCodigo(). "\n";
                     echo "2) Destino: ". $viajes[$viajeAModificar - 1]->getDestino(). "\n";
@@ -124,15 +153,17 @@
                     echo "0) No modificar nada.\nOpción: ";
                     $rta = trim(fgets(STDIN));
 
+                    // Mensaje de error
                     if ($rta < 0 || $rta > 4) {
                         echo "Opción incorrecta\n";
                     }
 
-                } while($rta < 0 || $rta > 4);
+                } while($rta < 0 || $rta > 4); // Para asegurar una respuesta correcta
 
                 
                 switch ($rta) {
 
+                    // Cambiar el código
                     case 1:
 
                         echo "Ingrese el nuevo código de viaje: ";
@@ -141,6 +172,7 @@
 
                         break;
 
+                    // Cambiar el destino
                     case 2:
 
                         echo "Ingrese el nuevo destino de viaje: ";
@@ -149,8 +181,10 @@
 
                         break;
 
+                    // Cambiar la cantidad máxima de pasajeros
                     case 3:
 
+                        // Para asegurar que la cantidad máxima de pasajeros no pase a ser menor que la cantidad de pasajeros actuales
                         do {
 
                             echo "Ingrese la nueva cantidad máxima de pasajeros del viaje\n(No puede ser menor que la cantidad de pasajeros actuales): ";
@@ -162,11 +196,12 @@
                                 $cambiado = true;
                             }
 
+                            // Mensaje de error
                             else {
                                 echo "No se cumple la condición\n";
                             }
 
-                        } while ($cambiado == false);
+                        } while ($cambiado == false); // Para asegurar una respuesta correcta
                         
                         break;
                 
@@ -174,11 +209,13 @@
                         
                         do {
 
+                            // Consultamos que se desea hacer con los pasajeros
                             echo "¿Qué deséa hacer con los pasajeros?\n1. Agregar un pasajero\n2. Borrar un pasajero\n3. Modificar un pasajero\n0. No hacer nada\nOpción: ";
                             $accionPasajero = trim(fgets(STDIN));
                         
                             $listaDePasajeros = $viajes[$viajeAModificar - 1]->getPasajeros();
 
+                            // Agregar un pasajero
                             if ($accionPasajero == 1) {
 
                                 $nuevoPasajero = menuPasajero();
@@ -186,6 +223,8 @@
                                 $viajes[$viajeAModificar - 1]->setPasajeros($listaDePasajeros);
                             
                             }
+
+                            // Borrar un pasajero
                             elseif ($accionPasajero == 2) {
 
                                 do {
@@ -208,10 +247,13 @@
                                 } while ($pasajeroABorrar < 0 || $pasajeroABorrar > count($listaDePasajeros) && (!is_int($pasajeroABorrar)));
 
                             }
+
+                            // Modificar un pasajero
                             elseif ($accionPasajero == 3) {
 
                                 do {
 
+                                    // Exponemos la lista de pasajeros
                                     echo "¿Qué pasajero deséa modificar?\n";
                                     $viajes[$viajeAModificar - 1]->listaDePasajeros();
                                     echo "Opción: ";
@@ -221,6 +263,7 @@
 
                                         do {
 
+                                            // Menú para chequear que se va a modificar
                                             echo "¿Qué deséa modificar del pasajero: ". $listaDePasajeros[$pasajeroAModificar - 1]['nombre']. " ". $listaDePasajeros[$pasajeroAModificar - 1]['apellido']. "\n";
                                             echo "1) Nombre: ". $listaDePasajeros[$pasajeroAModificar - 1]['nombre']. "\n";
                                             echo "2) Apellido: ". $listaDePasajeros[$pasajeroAModificar - 1]['apellido']. "\n";
@@ -228,6 +271,7 @@
                                             echo "0) No modificar nada.\nOpción: ";
                                             $opcionIngresada = trim(fgets(STDIN));
 
+                                            // Cambio de nombre
                                             if ($opcionIngresada == 1) {
 
                                                 echo "Ingrese el nuevo nombre: ";
@@ -236,6 +280,7 @@
 
                                             }
                                             
+                                            // Cambio de apellido
                                             elseif ($opcionIngresada == 2) {
 
                                                 echo "Ingrese el nuevo apellido: ";
@@ -244,6 +289,7 @@
 
                                             }
     
+                                            // Cambio de documento
                                             elseif ($opcionIngresada == 3) {
 
                                                 echo "Ingrese el nuevo documento: ";
@@ -252,37 +298,41 @@
 
                                             }
     
+                                            // Salir
                                             elseif ($opcionIngresada == 0) {
 
                                             }
     
+                                            // Opción incorrecta
                                             else {
                                                 echo "Opción incorrecta.\n";
                                             }
 
-                                        } while ($opcionIngresada < 0 || $opcionIngresada > 3 && (!is_int($opcionIngresada)));
+                                        } while ($opcionIngresada < 0 || $opcionIngresada > 3 && (!is_int($opcionIngresada))); // Para asegurar una respuesta correcta
 
                                     }
 
+                                    // Mensaje de error
                                     else {
 
                                         echo "Opción incorrecta\n";
                                     }
 
 
-                                } while ($pasajeroAModificar < 0 || $pasajeroAModificar > count($listaDePasajeros) && (!is_int($pasajeroAModificar)));
+                                } while ($pasajeroAModificar < 0 || $pasajeroAModificar > count($listaDePasajeros) && (!is_int($pasajeroAModificar))); // Para asegurar una respuesta correcta
 
                             }
                             elseif ($accionPasajero == 0) {
 
                             }
 
+                            // Mensaje de error
                             else {
                                 echo "Opción incorrecta";
                             }
 
                         
-                        } while($accionPasajero > 3 || $accionPasajero < 0);
+                        } while($accionPasajero > 3 || $accionPasajero < 0); //Para asegurar una respuesta correcta
 
                         break;
 
@@ -291,11 +341,12 @@
                 break;
 
             case 3:
-    
+                // Mostrar información de un viaje
                 echo "Seleccione el viaje del que quiere ver la información:\n"; 
     
                 do {
 
+                    // Mostramos los viajes guardados
                     for ($i = 0; $i < count($viajes); $i++) {
                         echo $i + 1 . ". Destino: ". $viajes[$i]->getDestino(). " - Código: ". $viajes[$i]->getCodigo(). "\n";
                     }
@@ -326,7 +377,5 @@
                 break;
     
         }
+        
     } while($case <> 0);
-
-    /*Implementar un script testViaje.php que cree una instancia de la clase Viaje y presente un menú que permita cargar 
-    la información del viaje, modificar y ver sus datos.*/
