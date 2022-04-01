@@ -292,8 +292,10 @@
 
                                                 echo "Ingrese el nuevo nombre: ";
                                                 $nuevoNombre = trim(fgets(STDIN));
-                                                $pasajeroNombreCambiado = [$nuevoNombre, $pasajeroAModificar - 1] ;
-                                                $viajes[$viajeAModificar -1]->setNombrePasajero($pasajeroNombreCambiado);
+
+                                                $pasajeros = $viajes[$viajeAModificar - 1]->getPasajeros();
+                                                $pasajeros[$pasajeroAModificar - 1]['nombre'] = $nuevoNombre;
+                                                $viajes[$viajeAModificar - 1]->setPasajeros($pasajeros);
 
                                             }
                                             
@@ -302,8 +304,10 @@
 
                                                 echo "Ingrese el nuevo apellido: ";
                                                 $nuevoApellido = trim(fgets(STDIN));
-                                                $pasajeroApellidoCambiado = [$nuevoApellido, $pasajeroAModificar - 1] ;
-                                                $viajes[$viajeAModificar -1]->setApellidoPasajero($pasajeroApellidoCambiado);
+
+                                                $pasajeros = $viajes[$viajeAModificar - 1]->getPasajeros();
+                                                $pasajeros[$pasajeroAModificar - 1]['apellido'] = $nuevoApellido;
+                                                $viajes[$viajeAModificar - 1]->setPasajeros($pasajeros);
 
                                             }
     
@@ -312,8 +316,10 @@
 
                                                 echo "Ingrese el nuevo documento: ";
                                                 $nuevoDocumento = trim(fgets(STDIN));
-                                                $pasajeroDocumentoCambiado = [$nuevoDocumento, $pasajeroAModificar - 1] ;
-                                                $viajes[$viajeAModificar -1]->setDocumentoPasajero($pasajeroDocumentoCambiado);
+
+                                                $pasajeros = $viajes[$viajeAModificar - 1]->getPasajeros();
+                                                $pasajeros[$pasajeroAModificar - 1]['documento'] = $nuevoDocumento;
+                                                $viajes[$viajeAModificar - 1]->setPasajeros($pasajeros);
 
                                             }
     
