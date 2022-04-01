@@ -276,7 +276,8 @@
 
                                                 echo "Ingrese el nuevo nombre: ";
                                                 $nuevoNombre = trim(fgets(STDIN));
-                                                $viajes[$viajeAModificar -1]->setNombrePasajero($nuevoNombre,$pasajeroAModificar - 1);
+                                                $pasajeroNombreCambiado = [$nuevoNombre, $pasajeroAModificar - 1] ;
+                                                $viajes[$viajeAModificar -1]->setNombrePasajero($pasajeroNombreCambiado);
 
                                             }
                                             
@@ -285,7 +286,8 @@
 
                                                 echo "Ingrese el nuevo apellido: ";
                                                 $nuevoApellido = trim(fgets(STDIN));
-                                                $viajes[$viajeAModificar -1]->setApellidoPasajero($nuevoApellido,$pasajeroAModificar - 1);
+                                                $pasajeroApellidoCambiado = [$nuevoApellido, $pasajeroAModificar - 1] ;
+                                                $viajes[$viajeAModificar -1]->setApellidoPasajero($pasajeroApellidoCambiado);
 
                                             }
     
@@ -294,7 +296,8 @@
 
                                                 echo "Ingrese el nuevo documento: ";
                                                 $nuevoDocumento = trim(fgets(STDIN));
-                                                $viajes[$viajeAModificar -1]->setDocumentoPasajero($nuevoDocumento,$pasajeroAModificar - 1);
+                                                $pasajeroDocumentoCambiado = [$nuevoDocumento, $pasajeroAModificar - 1] ;
+                                                $viajes[$viajeAModificar -1]->setDocumentoPasajero($pasajeroDocumentoCambiado);
 
                                             }
     

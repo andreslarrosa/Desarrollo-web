@@ -53,16 +53,16 @@
             $this->pasajeros = $pasajerosN;
         }
 
-        public function setNombrePasajero($nuevoNombre, $numPasajero) {
-            $this->pasajeros[$numPasajero]['nombre'] = $nuevoNombre;
+        public function setNombrePasajero($pasajeroNombreCambiado) {
+            $this->pasajeros[$pasajeroNombreCambiado[1]]['nombre'] = $pasajeroNombreCambiado[0];
         }
 
-        public function setApellidoPasajero($nuevoApellido, $numPasajero) {
-            $this->pasajeros[$numPasajero]['apellido'] = $nuevoApellido;
+        public function setApellidoPasajero($pasajeroApellidoCambiado) {
+            $this->pasajeros[$pasajeroApellidoCambiado[1]]['apellido'] = $pasajeroApellidoCambiado[0];
         }
 
-        public function setDocumentoPasajero($nuevoDocumento, $numPasajero) {
-            $this->pasajeros[$numPasajero]['documento'] = $nuevoDocumento;
+        public function setDocumentoPasajero($pasajeroDocumentoCambiado) {
+            $this->pasajeros[$pasajeroDocumentoCambiado[1]]['documento'] = $pasajeroDocumentoCambiado[0];
         }
 
         // Función to string para mostrar información del viaje
