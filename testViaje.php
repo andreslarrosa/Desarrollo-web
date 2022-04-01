@@ -28,6 +28,18 @@
     $viajes[0] = $viaje1;
 
 
+    // Función que muestra la lista de pasajeros con sus datos
+    function listaDePasajerosInfo($viaje) {
+
+        // En un principio usaba print_r, pero como no me gustaba como lo muestra decidí hacerlo manualmente
+        // print_r($this->pasajeros);
+    
+        for ($i = 0; $i < count($viaje->getPasajeros()); $i++) {
+            echo $i + 1 . ". ". $viaje->getPasajeros()[$i]['nombre']. " ". $viaje->getPasajeros()[$i]['apellido']. " - DNI: ". $viaje->getPasajeros()[$i]['documento']. "\n";
+        }
+    
+    }
+
     /**
      * Función que simula un menú de opciones y verifica su respuesta
      * @return int
@@ -230,7 +242,7 @@
                                 do {
 
                                     echo "¿Qué pasajero deséa borrar?\n";
-                                    $viajes[$viajeAModificar - 1]->listaDePasajeros();
+                                    listaDePasajerosInfo($viajes[$viajeAModificar- 1]);
                                     echo "Opción: ";
                                     $pasajeroABorrar = trim(fgets(STDIN));
 
@@ -255,7 +267,7 @@
 
                                     // Exponemos la lista de pasajeros
                                     echo "¿Qué pasajero deséa modificar?\n";
-                                    $viajes[$viajeAModificar - 1]->listaDePasajeros();
+                                    listaDePasajerosInfo($viajes[$viajeAModificar- 1]);
                                     echo "Opción: ";
                                     $pasajeroAModificar = trim(fgets(STDIN));
 
@@ -367,7 +379,7 @@
     
                 if ($mostrarPasajeros == "s") {*/
                     echo $viajes[$viajeABuscar - 1]. "\nLista de pasajeros:\n";
-                    $viajes[$viajeABuscar - 1]->listaDePasajeros();
+                    listaDePasajerosInfo($viajes[$viajeABuscar- 1]);
                 /*}*/
 
     

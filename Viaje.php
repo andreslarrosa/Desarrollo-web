@@ -70,17 +70,5 @@
         public function __toString() {
             return "Código de viaje: ". $this->codigo. "\nDestino del viaje: ". $this->destino. "\nCantidad máxima de pasajeros: ". $this->maxpasajeros. "\nCantidad de pasajeros: ". count($this->pasajeros);
         }
-        
-        // Función que muestra la lista de pasajeros con sus datos
-        public function listaDePasajeros() {
-
-            // En un principio usaba print_r, pero como no me gustaba como lo muestra decidí hacerlo manualmente
-            // print_r($this->pasajeros);
-
-            for ($i = 0; $i < count($this->pasajeros); $i++) {
-                echo $i + 1 . ". ". $this->pasajeros[$i]['nombre']. " ". $this->pasajeros[$i]['apellido']. " - DNI: ". $this->pasajeros[$i]['documento']. "\n";
-            }
-
-        }
 
     }
