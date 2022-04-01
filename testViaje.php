@@ -187,7 +187,7 @@
                         // Para asegurar que la cantidad máxima de pasajeros no pase a ser menor que la cantidad de pasajeros actuales
                         do {
 
-                            echo "Ingrese la nueva cantidad máxima de pasajeros del viaje\n(No puede ser menor que la cantidad de pasajeros actuales): ";
+                            echo "Ingrese la nueva cantidad máxima de pasajeros del viaje\n(No puede ser menor que la cantidad de pasajeros actuales)(". count($viajes[$viajeAModificar - 1]->getPasajeros()). "): ";
                             $nuevaCantMax = trim(fgets(STDIN));
                             $cambiado = false;
 
