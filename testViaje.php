@@ -28,7 +28,11 @@
     $viajes[0] = $viaje1;
 
 
-    // Función que muestra la lista de pasajeros con sus datos
+    /**
+     * Función que muestra la lista de pasajeros con sus datos
+     * @param object $viaje
+     */
+    
     function listaDePasajerosInfo($viaje) {
 
         // En un principio usaba print_r, pero como no me gustaba como lo muestra decidí hacerlo manualmente
