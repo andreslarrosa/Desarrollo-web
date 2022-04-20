@@ -172,10 +172,10 @@ class Viaje
         if (count($listaDePasajeros) > 0) {
             do {
 
-                $pasajeroABuscar[0] = $listaDePasajeros[$i]->getNombre();
-                $pasajeroABuscar[1] = $listaDePasajeros[$i]->getApellido();
-                $pasajeroABuscar[2] = $listaDePasajeros[$i]->getDocumento();
-                $pasajeroABuscar[3] = $listaDePasajeros[$i]->getTelefono();
+                $pasajeroABuscar[0] = $listaDePasajeros[$i]->getNombre(); // Se puede repetir
+                $pasajeroABuscar[1] = $listaDePasajeros[$i]->getApellido(); // Se puede repetir
+                $pasajeroABuscar[2] = $listaDePasajeros[$i]->getDocumento(); // No se debería repetir
+                $pasajeroABuscar[3] = $listaDePasajeros[$i]->getTelefono(); // Se puede repetir
 
                 if ($pasajeroABuscar == $pasajero) {
                     $seRepite = true;
