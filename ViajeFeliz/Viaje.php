@@ -117,7 +117,7 @@ class Viaje
     }
 
     /**
-     * Función utilizada para modificar los datos de un pasajero, donde se ingresa el dato a modificar, que es lo que se va a modificar y el pasajero al que se va a modificar
+     * Función utilizada para modificar los datos del Responsable, donde se ingresa el dato a modificar y que es lo que se va a modificar
      * @param mixed $dato
      * @param int $valor
      * @param object $pasajero 
