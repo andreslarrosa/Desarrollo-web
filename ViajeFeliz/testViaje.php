@@ -58,7 +58,7 @@ function menuReponsable()
     echo "Ingrese el número de licencia del responsable del viaje: ";
     $numLicenciaResponsable = trim(fgets(STDIN));
     $responsable = new ResponsableV($nombreResponsable, $apellidoResponsable, $numEmpleadoResponsable, $numLicenciaResponsable);
-    echo "Responsable: ". $responsable. "\n";
+    echo "Responsable: " . $responsable . "\n";
 
     return $responsable;
 }
@@ -129,7 +129,7 @@ function crearViaje()
         } else {
             $pasajero = new Pasajero($nuevoPasajero[0], $nuevoPasajero[1], $nuevoPasajero[2], $nuevoPasajero[3]);
             $viajeCreado->agregarPasajero($pasajero);
-            echo "Pasajero agregado: ". $pasajero. "\n";
+            echo "Pasajero agregado: " . $pasajero . "\n";
         }
     }
 
@@ -252,20 +252,19 @@ do {
                         // Agregar un pasajero
                         if ($accionPasajero == 1) {
 
-                            if ( count($viajes[$viajeAModificar - 1]->getPasajeros()) < $viajes[$viajeAModificar - 1]->getMaxPasajeros()){
+                            if (count($viajes[$viajeAModificar - 1]->getPasajeros()) < $viajes[$viajeAModificar - 1]->getMaxPasajeros()) {
                                 do {
                                     $nuevoPasajero = menuPasajero();
                                     $comprobarNuevoPasajero = $viajes[$viajeAModificar - 1]->pasajeroRepetido($nuevoPasajero);
-    
+
                                     if ($comprobarNuevoPasajero == true) {
                                         echo "El pasajero ya se encuentra en el viaje\n";
                                     }
                                 } while ($comprobarNuevoPasajero == true);
-    
+
                                 $pasajero = new Pasajero($nuevoPasajero[0], $nuevoPasajero[1], $nuevoPasajero[2], $nuevoPasajero[3]);
                                 $viajes[$viajeAModificar - 1]->agregarPasajero($pasajero);
-                            }
-                            else {
+                            } else {
                                 echo "El viaje ya alcanzó su cupo máximo de pasajeros\n";
                             }
                         }
@@ -340,7 +339,7 @@ do {
 
                                                 echo "Ingrese el nuevo nombre: ";
                                                 $nuevoNombre = trim(fgets(STDIN));
-                                                $viajes[$viajeAModificar- 1]->modificarDatosDePasajeros($nuevoNombre,1,$pasajeroAModificar - 1);
+                                                $viajes[$viajeAModificar - 1]->modificarDatosDePasajeros($nuevoNombre, 1, $pasajeroAModificar - 1);
                                             }
 
                                             // Cambio de apellido
@@ -348,7 +347,7 @@ do {
 
                                                 echo "Ingrese el nuevo apellido: ";
                                                 $nuevoApellido = trim(fgets(STDIN));
-                                                $viajes[$viajeAModificar- 1]->modificarDatosDePasajeros($nuevoApellido,2,$pasajeroAModificar - 1);
+                                                $viajes[$viajeAModificar - 1]->modificarDatosDePasajeros($nuevoApellido, 2, $pasajeroAModificar - 1);
                                             }
 
                                             // Cambio de documento
@@ -356,7 +355,7 @@ do {
 
                                                 echo "Ingrese el nuevo documento: ";
                                                 $nuevoDocumento = trim(fgets(STDIN));
-                                                $viajes[$viajeAModificar- 1]->modificarDatosDePasajeros($nuevoDocumento,3,$pasajeroAModificar - 1);
+                                                $viajes[$viajeAModificar - 1]->modificarDatosDePasajeros($nuevoDocumento, 3, $pasajeroAModificar - 1);
                                             }
 
                                             // Cambio de Teléfono
@@ -364,7 +363,7 @@ do {
 
                                                 echo "Ingrese el nuevo teléfono: ";
                                                 $nuevoTelefono = trim(fgets(STDIN));
-                                                $viajes[$viajeAModificar- 1]->modificarDatosDePasajeros($nuevoTelefono,4,$pasajeroAModificar - 1);
+                                                $viajes[$viajeAModificar - 1]->modificarDatosDePasajeros($nuevoTelefono, 4, $pasajeroAModificar - 1);
                                             }
 
                                             // Salir
@@ -415,34 +414,30 @@ do {
 
                         // Cambio de nombre
                         if ($opcionIngresada == 1) {
-
                             echo "Ingrese el nuevo nombre: ";
                             $nuevoNombre = trim(fgets(STDIN));
-                            $viajes[$viajeAModificar - 1]->getResponsable()->setNombre($nuevoNombre);
+                            $viajes[$viajeAModificar - 1]->modificarDatosReponsable($nuevoNombre, 1);
                         }
 
                         // Cambio de apellido
                         elseif ($opcionIngresada == 2) {
-
                             echo "Ingrese el nuevo apellido: ";
                             $nuevoApellido = trim(fgets(STDIN));
-                            $viajes[$viajeAModificar - 1]->getResponsable()->setApellido($nuevoApellido);
+                            $viajes[$viajeAModificar - 1]->modificarDatosReponsable($nuevoApellido, 2);
                         }
 
                         // Cambio de número de empleado
                         elseif ($opcionIngresada == 3) {
-
                             echo "Ingrese el nuevo número de Empleado: ";
                             $nuevoNumeroDeEmpleado = trim(fgets(STDIN));
-                            $viajes[$viajeAModificar - 1]->getResponsable()->setNumeroDeEmpleado($nuevoNumeroDeEmpleado);
+                            $viajes[$viajeAModificar - 1]->modificarDatosReponsable($nuevoNumeroDeEmpleado, 3);
                         }
 
                         // Cambio de número de licencia
                         elseif ($opcionIngresada == 4) {
-
                             echo "Ingrese el nuevo número de licencia: ";
                             $nuevoNumeroDeLicencia = trim(fgets(STDIN));
-                            $viajes[$viajeAModificar - 1]->getResponsable()->setNumeroDeLicencia($nuevoNumeroDeLicencia);
+                            $viajes[$viajeAModificar - 1]->modificarDatosReponsable($nuevoNumeroDeLicencia, 4);
                         }
 
                         // Salir

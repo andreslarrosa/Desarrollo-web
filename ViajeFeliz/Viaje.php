@@ -106,19 +106,38 @@ class Viaje
 
         if ($valor == 1) {
             $listaDePasajeros[$pasajero]->setNombre($dato);
-            $this->setPasajeros($listaDePasajeros);
         } elseif ($valor == 2) {
             $listaDePasajeros[$pasajero]->setApellido($dato);
-            $this->setPasajeros($listaDePasajeros);
         } elseif ($valor == 3) {
             $listaDePasajeros[$pasajero]->setDocumento($dato);
-            $this->setPasajeros($listaDePasajeros);
         } elseif ($valor == 4) {
             $listaDePasajeros[$pasajero]->setTelefono($dato);
-            $this->setPasajeros($listaDePasajeros);
         }
+        $this->setPasajeros($listaDePasajeros);
     }
 
+    /**
+     * Función utilizada para modificar los datos de un pasajero, donde se ingresa el dato a modificar, que es lo que se va a modificar y el pasajero al que se va a modificar
+     * @param mixed $dato
+     * @param int $valor
+     * @param object $pasajero 
+     */
+    public function modificarDatosReponsable($dato, $valor)
+    {
+
+        $responsable = $this->getResponsable();
+
+        if ($valor == 1) {
+            $responsable->setNombre($dato);
+        } elseif ($valor == 2) {
+            $responsable->setApellido($dato);
+        } elseif ($valor == 3) {
+            $responsable->setNumeroDeEmpleado($dato);
+        } elseif ($valor == 4) {
+            $responsable->setNumeroDeLicencia($dato);
+        }
+        $this->setResponsable($responsable);
+    }
 
     /**
      * Función utilizada para agregar un pasajero previamente verificado
@@ -134,7 +153,6 @@ class Viaje
             $listaDePasajeros[count($listaDePasajeros)] = $pasajero;
             $this->setPasajeros($listaDePasajeros);
         }
-
     }
 
     /**
