@@ -10,8 +10,10 @@ class Viaje
     private $maxPasajeros;
     private $pasajeros = [];
     private $responsable;
+    private $importe;
+    private $idaYVuelta;
 
-    public function __construct($code, $dest, $maxPa, $pa, $resp)
+    public function __construct($code, $dest, $maxPa, $pa, $resp, $imp, $iYV)
     {
 
         // Construimos un objeto y le asignamos dichos atributos
@@ -20,6 +22,8 @@ class Viaje
         $this->maxPasajeros = $maxPa;
         $this->pasajeros = $pa;
         $this->responsable = $resp;
+        $this->importe = $imp;
+        $this->idaYVuelta = $iYV;
     }
 
     // Funciones Get para recibir información de los atributos del objeto
@@ -48,6 +52,16 @@ class Viaje
         return $this->responsable;
     }
 
+    public function getImporte()
+    {
+        return $this->importe;
+    }
+
+    public function getIdaYVuelta()
+    {
+        return $this->idaYVuelta;
+    }
+
     // Funciones Set para modificar los atributos de dicho objeto
     public function setCodigo($codeN)
     {
@@ -74,10 +88,20 @@ class Viaje
         $this->responsable = $responsableN;
     }
 
+    public function setImporte($importeN)
+    {
+        $this->importe = $importeN;
+    }
+
+    public function setIdaYVuelta($idaYVueltaN)
+    {
+        $this->idaYVuelta = $idaYVueltaN;
+    }
+
     // Otras funciones
     public function __toString()
     {
-        return "Código de viaje: " . $this->getCodigo() . "\nDestino del viaje: " . $this->getDestino() . "\nCantidad máxima de pasajeros: " . $this->getMaxPasajeros() . "\nCantidad de pasajeros: " . count($this->getPasajeros()) . "\nResponsable: " . $this->getResponsable() . "\nPasajeros:\n" . $this->listaDePasajeros();
+        return "Código de viaje: " . $this->getCodigo() . "\nDestino del viaje: " . $this->getDestino() . "\nTipo de viaje: " . $this->getIdaYVuelta() . "\nImporte: " . $this->getImporte() . "\nCantidad máxima de pasajeros: " . $this->getMaxPasajeros() . "\nCantidad de pasajeros: " . count($this->getPasajeros()) . "\nResponsable: " . $this->getResponsable() . "\nPasajeros:\n" . $this->listaDePasajeros();
     }
 
     // Función que muestra la lista de pasajeros
@@ -145,9 +169,8 @@ class Viaje
      */
     public function agregarPasajero($pasajero)
     {
-
         // Validación ya realizada y aprobada en el test (Pero por si las dudas que solo se agregue el pasajero bajo dicha condición)
-        if (count($this->getPasajeros()) < $this->getMaxPasajeros()) {
+        if ($this->hayPasajesDisponibles()) {
             // array_push()
             $listaDePasajeros = $this->getPasajeros();
             $listaDePasajeros[count($listaDePasajeros)] = $pasajero;
@@ -185,5 +208,18 @@ class Viaje
         }
 
         return $seRepite;
+    }
+
+    /**
+     * Función que verifica si hay pasajes disponibles, en caso de haberlos retorna true, caso contrario false
+     * @return boolean $pasajes
+     */
+    function hayPasajesDisponibles()
+    {
+        $pasajes = false;
+        if (count($this->getPasajeros()) < $this->getMaxPasajeros()) {
+            $pasajes = true;
+        }
+        return $pasajes;
     }
 }

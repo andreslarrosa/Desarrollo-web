@@ -10,7 +10,6 @@ class Pasajero
 
     public function __construct($nom, $ape, $doc, $tel)
     {
-
         $this->nombre = $nom;
         $this->apellido = $ape;
         $this->documento = $doc;
@@ -38,7 +37,6 @@ class Pasajero
     {
         return $this->telefono;
     }
-
 
     // Métodos Set
 
