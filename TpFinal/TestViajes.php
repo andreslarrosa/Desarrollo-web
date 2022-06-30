@@ -47,17 +47,17 @@ function precargarDatos() {
     $objResponsable1->cargar(0, 160710, "Bernardo", "Benitez");
     $objResponsable1->insertar();
     $objViaje1 = new viaje();
-    $objViaje1->cargar(0, "La Pampa", 50, $objEmpresa->getIdEmpresa(), $objResponsable1->getRNumeroEmpleado(), 2500, "Cama", "Si");
+    $objViaje1->cargar(0, "La Pampa", 50, $objEmpresa, $objResponsable1, 2500, "Cama", "Si");
     $objViaje2 = new viaje();
-    $objViaje2->cargar(0, "Jujuy", 60, $objEmpresa->getIdEmpresa(), $objResponsable1->getRNumeroEmpleado(), 2501, "Semi-Cama", "No");
+    $objViaje2->cargar(0, "Jujuy", 60, $objEmpresa, $objResponsable1, 2501, "Semi-Cama", "No");
     $objViaje1->insertar();
     $objViaje2->insertar();
     $objPasajero1 = new pasajero();
-    $objPasajero1->cargar(41092312, "Jorge", "Rodriguez", 156321989, $objViaje1->getIdViaje());
+    $objPasajero1->cargar(41092312, "Jorge", "Rodriguez", 156321989, $objViaje1);
     $objPasajero2 = new pasajero();
-    $objPasajero2->cargar(37757712, "Roberto", "Hernandez", 155651329, $objViaje1->getIdViaje());
+    $objPasajero2->cargar(37757712, "Roberto", "Hernandez", 155651329, $objViaje1);
     $objPasajero3 = new pasajero();
-    $objPasajero3->cargar(18561648, "Selma", "Hells", 154513544, $objViaje2->getIdViaje());
+    $objPasajero3->cargar(18561648, "Selma", "Hells", 154513544, $objViaje2);
     $objPasajero1->insertar();
     $objPasajero2->insertar();
     $objPasajero3->insertar();
@@ -74,7 +74,7 @@ function menuPrincipal()
         echo "2. Modificar datos\n";
         echo "3. Eliminar datos\n";
         echo "4. Mostrar datos\n";
-        echo "5. Cargar datos prefabricados\n";
+        echo "5. Cargar datos de prueba\n";
         echo "0. Salir\n";
         echo "Opción: ";
         $respuesta = trim(fgets(STDIN));
@@ -141,10 +141,42 @@ function agregarViaje() {
     $bdResponsables = $objResponsable->listar("");
     $objEmpresa = new empresa();
     $bdEmpresas = $objEmpresa->listar("");
-    echo "Ingrese el destino del viaje: ";
-    $crearViajeDestinoViaje = trim(fgets(STDIN));
-    echo "Ingrese la cantidad máxima de pasajeros: ";
-    $crearViajeVCantMaxPasajeros = trim(fgets(STDIN));
+    $viajeValido = false;
+    do {
+        echo "Ingrese el destino del viaje: ";
+        $crearViajeDestinoViaje = trim(fgets(STDIN));
+        $bdViajes = $objViaje->listar("");
+        if (count($bdViajes) > 0) {
+            $i=0;
+            $viajeDuplicado = false;
+            do {
+                if (strtoupper($bdViajes[$i]->getVDestino()) == strtoupper($crearViajeDestinoViaje)) {
+                    $viajeDuplicado = true;
+                }
+                $i++;
+            } while ($i<count($bdViajes) && $viajeDuplicado == false);
+            if ($viajeDuplicado == true) {
+                echo "Ya existe un viaje con dicho destino\n";
+            }
+            else {
+                $viajeValido = true;
+            }
+        }
+        else {
+            $viajeValido = true;
+        }
+    } while ($viajeValido == false);
+    $valido = false;
+    do {
+        echo "Ingrese la cantidad máxima de pasajeros: ";
+        $crearViajeVCantMaxPasajeros = trim(fgets(STDIN));
+        if ($crearViajeVCantMaxPasajeros > 0 && is_numeric($crearViajeVCantMaxPasajeros)) {
+            $valido = true;
+        }
+        else {
+            echo "Por favor ingrese un valor válido, mayor a 0\n";
+        }
+    } while ($valido == false);
     $valido = false;
     do {
         echo "Seleccione la empresa a cargo del viaje:\n";
@@ -152,7 +184,7 @@ function agregarViaje() {
         echo "Opción: ";
         $crearViajeEmpresaViaje = trim(fgets(STDIN));
         if ($crearViajeEmpresaViaje > 0 && $crearViajeEmpresaViaje <= count($bdEmpresas)) {
-            $crearViajeIdEmpresaViaje = $bdEmpresas[$crearViajeEmpresaViaje-1]->getIdEmpresa();
+            $crearViajeIdEmpresaViaje = $bdEmpresas[$crearViajeEmpresaViaje-1];
             $valido = true;
         }
         else {
@@ -166,7 +198,7 @@ function agregarViaje() {
         echo "Opción: ";
         $crearViajeResponsableViaje = trim(fgets(STDIN));
         if ($crearViajeResponsableViaje > 0 && $crearViajeResponsableViaje <= count($bdResponsables)) {
-            $crearViajeRNumeroDeEmpleado = $bdResponsables[$crearViajeResponsableViaje-1]->getRNumeroEmpleado();
+            $crearViajeObjEmpleado = $bdResponsables[$crearViajeResponsableViaje-1];
             $valido = true;
         }
         else {
@@ -175,18 +207,45 @@ function agregarViaje() {
     } while ($valido == false);
     echo "Ingrese el importe del viaje: ";
     $crearViajeVImporteViaje = trim(fgets(STDIN));
-    echo "Ingrese el tipo de asiento del viaje: (Cama/Semi-Cama): ";
-    $crearViajeTipoAsientoViaje = trim(fgets(STDIN));
-    echo "Ingrese el tipo de viaje (Si = Ida y vuelta || No = Ida): ";
-    $crearViajeIdaYVueltaViaje = trim(fgets(STDIN));
+    $valido = false;
+    do {
+        echo "Ingrese el tipo de asiento del viaje:\n1. Cama\n2. Semi-Cama\nOpcion: ";
+        $crearViajeTipoAsientoViaje = trim(fgets(STDIN));
+        if ($crearViajeTipoAsientoViaje == 1) {
+            $valido = true;
+            $crearViajeTipoAsientoViaje = "Cama";
+        }
+        elseif ($crearViajeTipoAsientoViaje == 2) {
+            $valido = true;
+            $crearViajeTipoAsientoViaje = "Semi-Cama";
+        }
+        else {
+            echo "Opción incorrecta\n";
+        }
+    } while ($valido == false);
+    $valido = false;
+    do {
+        echo "Ingrese el tipo de viaje:\n1.Ida\n2.Ida y vuelta\nOpcion: ";
+        $crearViajeIdaYVueltaViaje = trim(fgets(STDIN));
+        if ($crearViajeIdaYVueltaViaje == 1) {
+            $valido = true;
+            $crearViajeIdaYVueltaViaje = "No";
+        }
+        elseif ($crearViajeIdaYVueltaViaje == 2) {
+            $valido = true;
+            $crearViajeIdaYVueltaViaje = "Si";
+        }
+        else {
+            echo "Opción incorrecta\n";
+        }
+    } while ($valido == false);
 
-    $objViaje->cargar(0,$crearViajeDestinoViaje,$crearViajeVCantMaxPasajeros,$crearViajeIdEmpresaViaje,$crearViajeRNumeroDeEmpleado,$crearViajeVImporteViaje,$crearViajeTipoAsientoViaje,$crearViajeIdaYVueltaViaje);
+    $objViaje->cargar(0,$crearViajeDestinoViaje,$crearViajeVCantMaxPasajeros,$crearViajeIdEmpresaViaje,$crearViajeObjEmpleado,$crearViajeVImporteViaje,$crearViajeTipoAsientoViaje,$crearViajeIdaYVueltaViaje);
     return $objViaje;
 }
 
 function agregarResponsable() {
     $objResponsable = new responsable();
-    $valido = false;
     echo "Ingrese el número de licencia del Responsable: ";
     $crearResponsableRNumeroLicencia = trim(fgets(STDIN));
     echo "Ingrese el nombre del Responsable: ";
@@ -208,6 +267,7 @@ function agregarPasajeroElegirViaje() {
     do {
         echo "Seleccione el viaje al que quiere agregar el pasajero:\n===================================================\n";
         listarViajes();
+        echo "O ingrese 0 para cancelar\nOpción: ";
         $crearPasajeroViajeSeleccionado = trim(fgets(STDIN));
         if (is_numeric($crearPasajeroViajeSeleccionado)) {
             if ($crearPasajeroViajeSeleccionado > 0 && $crearPasajeroViajeSeleccionado <= count($bdViajes)) {
@@ -220,6 +280,10 @@ function agregarPasajeroElegirViaje() {
                 else {
                     echo "El viaje ya superó la cantidad máxima de pasajeros\n";
                 }
+            }
+            elseif($crearPasajeroViajeSeleccionado == 0) {
+                $pasajeroCreado = null;
+                break;
             }
             else {
                 echo "Error. Por favor ingrese una opción correcta de viaje\n";
@@ -247,17 +311,17 @@ function crearPasajero($viaje) {
         else {
             echo "El número de documento ya se encuentra en la base de datos\n";
         }
-    } while ($valido == false);
-
-    echo "Ingrese el nombre del pasajero: ";
-    $nombrePasajeroACrear = trim(fgets(STDIN));
-    echo "Ingrese el apellido del pasajero: ";
-    $apellidoPasajeroACrear = trim(fgets(STDIN));
-    echo "Ingrese el teléfono del pasajero: ";
-    $telefonoPasajeroACrear = trim(fgets(STDIN));
-    $idViajePasajeroACrear = $viaje->getIdViaje();
-    
-    $objPasajero->cargar($dniPasajeroACrear,$nombrePasajeroACrear,$apellidoPasajeroACrear,$telefonoPasajeroACrear,$idViajePasajeroACrear);
+    } while ($valido == false && $dniPasajeroACrear != "0");
+    if ($valido == true) {
+        echo "Ingrese el nombre del pasajero: ";
+        $nombrePasajeroACrear = trim(fgets(STDIN));
+        echo "Ingrese el apellido del pasajero: ";
+        $apellidoPasajeroACrear = trim(fgets(STDIN));
+        echo "Ingrese el teléfono del pasajero: ";
+        $telefonoPasajeroACrear = trim(fgets(STDIN));
+        
+        $objPasajero->cargar($dniPasajeroACrear,$nombrePasajeroACrear,$apellidoPasajeroACrear,$telefonoPasajeroACrear,$viaje);
+    }
 
     return $objPasajero;
 }
@@ -372,22 +436,50 @@ function modificarViaje() {
         echo "Opción: ";
         $respuestaModificarViaje = trim(fgets(STDIN));
         if ($respuestaModificarViaje == 1) {
-            echo "Ingrese el nuevo destino del viaje: ";
-            $nuevoDestinoViaje = trim(fgets(STDIN));
-            $viajeElegido->setEmpNombre($nuevoDestinoViaje);
+            $viajeValido = false;
+            do {
+                echo "Ingrese el destino del viaje: ";
+                $crearViajeDestinoViaje = trim(fgets(STDIN));
+                $bdViajes = $objViaje->listar("");
+                if (count($bdViajes) > 0) {
+                    $i=0;
+                    $viajeDuplicado = false;
+                    do {
+                        if (strtoupper($bdViajes[$i]->getVDestino()) == strtoupper($crearViajeDestinoViaje)) {
+                            $viajeDuplicado = true;
+                        }
+                        $i++;
+                    } while ($i<count($bdViajes) && $viajeDuplicado == false);
+                    if ($viajeDuplicado == true) {
+                        echo "Ya existe un viaje con dicho destino\n";
+                    }
+                    else {
+                        $viajeValido = true;
+                    }
+                }
+                else {
+                    $viajeValido = true;
+                }
+            } while ($viajeValido == false);
+            $viajeElegido->setVDestino($crearViajeDestinoViaje);
             $viajeElegido->modificar();
             $valido = true;
+
         }
         elseif ($respuestaModificarViaje == 2) {
-            $objPasajero = new pasajero();
-            $bdPasajerosDelViaje = $objPasajero->listar("idviaje=". $viajeElegido->getIdViaje());
-            echo "Ingrese la nueva cantidad máxima de pasajeros\nNo puede ser menor a la cantidad actual (". count($bdPasajerosDelViaje) . ")\nNi tampoco menor a 0: ";
-            $nuevaCantidadMaxima = trim(fgets(STDIN));
-            if ($nuevaCantidadMaxima > 0 && $nuevaCantidadMaxima >= count($bdPasajerosDelViaje)) {
-                $viajeElegido->setVCantMaxPasajeros($nuevaCantidadMaxima);
-                $viajeElegido->modificar();
-                $valido = true;
-            }
+            $respuestaValida = false;
+            do {
+                $objPasajero = new pasajero();
+                $bdPasajerosDelViaje = $objPasajero->listar("idviaje=". $viajeElegido->getIdViaje());
+                echo "Ingrese la nueva cantidad máxima de pasajeros\nNo puede ser menor a la cantidad actual (". count($bdPasajerosDelViaje) . ") ni tampoco menor a 0: ";
+                $nuevaCantidadMaxima = trim(fgets(STDIN));
+                if ($nuevaCantidadMaxima > 0 && $nuevaCantidadMaxima >= count($bdPasajerosDelViaje)) {
+                    $viajeElegido->setVCantMaxPasajeros($nuevaCantidadMaxima);
+                    $viajeElegido->modificar();
+                    $valido = true;
+                    $respuestaValida = true;
+                }
+            } while ($respuestaValida == false);
         }
         elseif ($respuestaModificarViaje == 3) {
             $objEmpresa = new empresa();
@@ -399,7 +491,7 @@ function modificarViaje() {
                 $respuestaEmpresaElegida = trim(fgets(STDIN));
                 if ($respuestaEmpresaElegida > 0 && $respuestaEmpresaElegida <= count($bdEmpresas)) {
                     $empresaElegida = $bdEmpresas[$respuestaEmpresaElegida - 1];
-                    $viajeElegido->setIdEmpresa($empresaElegida->getIdEmpresa());
+                    $viajeElegido->setObjEmpresa($empresaElegida);
                     $viajeElegido->modificar();
                     $respuestaValida = true;
                 }
@@ -416,7 +508,7 @@ function modificarViaje() {
                 $respuestaResponsableElegido = trim(fgets(STDIN));
                 if ($respuestaResponsableElegido > 0 && $respuestaResponsableElegido <= count($bdResponsables)) {
                     $responsableElegido = $bdResponsables[$respuestaResponsableElegido - 1];
-                    $viajeElegido->setRNumeroEmpleado($responsableElegido->getRNumeroEmpleado());
+                    $viajeElegido->setObjEmpleado($responsableElegido);
                     $viajeElegido->modificar();
                     $respuestaValida = true;
                 }
@@ -596,7 +688,7 @@ function modificarPasajero() {
                 $respuestaViajeElegido = trim(fgets(STDIN));
                 if ($respuestaViajeElegido > 0 && $respuestaViajeElegido <= count($bdViajes)) {
                     $viajeElegido = $bdViajes[$respuestaViajeElegido - 1];
-                    $pasajeroElegido->setIDViaje($viajeElegido->getIdViaje());
+                    $pasajeroElegido->setObjViaje($viajeElegido);
                     $pasajeroElegido->modificar();
                     $respuestaValida = true;
                 }
@@ -652,51 +744,56 @@ function eliminarEmpresa() {
     $objEmpresa = new empresa();
     $bdEmpresas = $objEmpresa->listar("");
     $valido = false;
-
-    do {
-        echo "Seleccione la empresa que deséa eliminar:\n===================================================\n";
-        listarEmpresas();
-        $empresaAEliminar = trim(fgets(STDIN));
-        if (is_numeric($empresaAEliminar)) {
-            if ($empresaAEliminar > 0 && $empresaAEliminar <= count($bdEmpresas)) {
-                $valido = true;
-                $EmpresaElegida = $bdEmpresas[$empresaAEliminar - 1];
+    if (count($bdEmpresas) == 0) {
+        echo "No hay empresas para eliminar\n";
+    }
+    else {
+        do {
+            echo "Seleccione la empresa que deséa eliminar:\n===================================================\n";
+            listarEmpresas();
+            $empresaAEliminar = trim(fgets(STDIN));
+            if (is_numeric($empresaAEliminar)) {
+                if ($empresaAEliminar > 0 && $empresaAEliminar <= count($bdEmpresas)) {
+                    $valido = true;
+                    $EmpresaElegida = $bdEmpresas[$empresaAEliminar - 1];
+                }
+                else {
+                    echo "Error. Por favor ingrese una opción correcta\n";
+                }
             }
             else {
-                echo "Error. Por favor ingrese una opción correcta\n";
+                echo "Error. La opción ingresada no es válida\n";
             }
-        }
-        else {
-            echo "Error. La opción ingresada no es válida\n";
-        }
-    } while ($valido == false);
-
-    do {
-        echo "Eliminar la empresa también eliminará los viajes relacionados a ella\ny por consecuencia los pasajeros asignados al mismo\nDeséa continuar? (S/N): ";
-        $respuestaEliminarEmpresa = trim(fgets(STDIN));
-        if (strtoupper($respuestaEliminarEmpresa) == "S") {
-            $objViaje = new viaje();
-            $bdViajesABorrar = $objViaje->listar("idempresa=". $EmpresaElegida->getIdEmpresa());
-            $objPasajero = new pasajero();
-            for ($i=0;$i<count($bdViajesABorrar);$i++) {
-                $bdPasajerosABorrar = $objPasajero->listar("idviaje=". $bdViajesABorrar[$i]->getIdViaje());
-                for ($j=0;$j<count($bdPasajerosABorrar);$j++) {
-                    $bdPasajerosABorrar[$j]->eliminar();
-                    echo "Pasajero Eliminado\n";
+        } while ($valido == false);
+    
+        do {
+            echo "Eliminar la empresa también eliminará los viajes relacionados a ella\ny por consecuencia los pasajeros asignados al mismo\nDeséa continuar? (S/N): ";
+            $respuestaEliminarEmpresa = trim(fgets(STDIN));
+            if (strtoupper($respuestaEliminarEmpresa) == "S") {
+                $objViaje = new viaje();
+                $bdViajesABorrar = $objViaje->listar("idempresa=". $EmpresaElegida->getIdEmpresa());
+                $objPasajero = new pasajero();
+                for ($i=0;$i<count($bdViajesABorrar);$i++) {
+                    $bdPasajerosABorrar = $objPasajero->listar("idviaje=". $bdViajesABorrar[$i]->getIdViaje());
+                    for ($j=0;$j<count($bdPasajerosABorrar);$j++) {
+                        $bdPasajerosABorrar[$j]->eliminar();
+                        echo "Pasajero Eliminado\n";
+                    }
+                    $bdViajesABorrar[$i]->eliminar();
+                    echo "Viaje Eliminado\n";
                 }
-                $bdViajesABorrar[$i]->eliminar();
-                echo "Viaje Eliminado\n";
+                $EmpresaElegida->eliminar();
+                echo "Empresa eliminada\n";
             }
-            $EmpresaElegida->eliminar();
-            echo "Empresa eliminada\n";
-        }
-        elseif (strtoupper($respuestaEliminarEmpresa) == "N") {
-            echo "Operación cancelada, no se eliminó nada\n";
-        }
-        else {
-            echo "Opción incorrecta\n";
-        }
-    } while (strtoupper($respuestaEliminarEmpresa) != "S" && strtoupper($respuestaEliminarEmpresa) != "N");
+            elseif (strtoupper($respuestaEliminarEmpresa) == "N") {
+                echo "Operación cancelada, no se eliminó nada\n";
+            }
+            else {
+                echo "Opción incorrecta\n";
+            }
+        } while (strtoupper($respuestaEliminarEmpresa) != "S" && strtoupper($respuestaEliminarEmpresa) != "N");
+    }
+
 }
 
 function eliminarViaje() {
@@ -704,44 +801,50 @@ function eliminarViaje() {
     $bdViajes = $objViaje->listar("");
     $valido = false;
 
-    do {
-        echo "Seleccione el viaje que deséa eliminar:\n===================================================\n";
-        listarViajes();
-        $viajeAEliminar = trim(fgets(STDIN));
-        if (is_numeric($viajeAEliminar)) {
-            if ($viajeAEliminar > 0 && $viajeAEliminar <= count($bdViajes)) {
-                $valido = true;
-                $viajeElegido = $bdViajes[$viajeAEliminar - 1];
+    if (count($bdViajes) == 0) {
+        echo "No hay viajes para eliminar\n";
+    }
+    else {
+        do {
+            echo "Seleccione el viaje que deséa eliminar:\n===================================================\n";
+            listarViajes();
+            $viajeAEliminar = trim(fgets(STDIN));
+            if (is_numeric($viajeAEliminar)) {
+                if ($viajeAEliminar > 0 && $viajeAEliminar <= count($bdViajes)) {
+                    $valido = true;
+                    $viajeElegido = $bdViajes[$viajeAEliminar - 1];
+                }
+                else {
+                    echo "Error. Por favor ingrese una opción correcta\n";
+                }
             }
             else {
-                echo "Error. Por favor ingrese una opción correcta\n";
+                echo "Error. La opción ingresada no es válida\n";
             }
-        }
-        else {
-            echo "Error. La opción ingresada no es válida\n";
-        }
-    } while ($valido == false);
+        } while ($valido == false);
+    
+        do {
+            echo "Eliminar el viaje también eliminará los pasajeros asignados al mismo\nDeséa continuar? (S/N): ";
+            $respuestaEliminarViaje = trim(fgets(STDIN));
+            if (strtoupper($respuestaEliminarViaje) == "S") {
+                $objPasajero = new pasajero();
+                $bdPasajerosABorrar = $objPasajero->listar("idviaje=". $viajeElegido->getIdViaje());
+                for ($i=0;$i<count($bdPasajerosABorrar);$i++) {
+                    $bdPasajerosABorrar[$i]->eliminar();
+                    echo "Pasajero Eliminado\n";
+                }
+                $viajeElegido->eliminar();
+                echo "Viaje Eliminado\n";
+            }
+            elseif (strtoupper($respuestaEliminarViaje) == "N") {
+                echo "Operación cancelada, no se eliminó nada\n";
+            }
+            else {
+                echo "Opción incorrecta\n";
+            }
+        } while (strtoupper($respuestaEliminarViaje) != "S" && strtoupper($respuestaEliminarViaje) != "N");
+    }
 
-    do {
-        echo "Eliminar el viaje también eliminará los pasajeros asignados al mismo\nDeséa continuar? (S/N): ";
-        $respuestaEliminarViaje = trim(fgets(STDIN));
-        if (strtoupper($respuestaEliminarViaje) == "S") {
-            $objPasajero = new pasajero();
-            $bdPasajerosABorrar = $objPasajero->listar("idviaje=". $viajeElegido->getIdViaje());
-            for ($i=0;$i<count($bdPasajerosABorrar);$i++) {
-                $bdPasajerosABorrar[$i]->eliminar();
-                echo "Pasajero Eliminado\n";
-            }
-            $viajeElegido->eliminar();
-            echo "Viaje Eliminado\n";
-        }
-        elseif (strtoupper($respuestaEliminarViaje) == "N") {
-            echo "Operación cancelada, no se eliminó nada\n";
-        }
-        else {
-            echo "Opción incorrecta\n";
-        }
-    } while (strtoupper($respuestaEliminarViaje) != "S" && strtoupper($respuestaEliminarViaje) != "N");
 }
 
 function eliminarResponsable() {
@@ -749,50 +852,56 @@ function eliminarResponsable() {
     $bdResponsables = $objResponsable->listar("");
     $valido = false;
 
-    do {
-        echo "Seleccione el responsable que deséa eliminar:\n===================================================\n";
-        listarResponsables();
-        $responsableAEliminar = trim(fgets(STDIN));
-        if (is_numeric($responsableAEliminar)) {
-            if ($responsableAEliminar > 0 && $responsableAEliminar <= count($bdResponsables)) {
-                $valido = true;
-                $responsableElegido = $bdResponsables[$responsableAEliminar - 1];
+    if (count($bdResponsables) == 0) {
+        echo "No hay responsables para eliminar\n";
+    }
+    else {
+        do {
+            echo "Seleccione el responsable que deséa eliminar:\n===================================================\n";
+            listarResponsables();
+            $responsableAEliminar = trim(fgets(STDIN));
+            if (is_numeric($responsableAEliminar)) {
+                if ($responsableAEliminar > 0 && $responsableAEliminar <= count($bdResponsables)) {
+                    $valido = true;
+                    $responsableElegido = $bdResponsables[$responsableAEliminar - 1];
+                }
+                else {
+                    echo "Error. Por favor ingrese una opción correcta\n";
+                }
             }
             else {
-                echo "Error. Por favor ingrese una opción correcta\n";
+                echo "Error. La opción ingresada no es válida\n";
             }
-        }
-        else {
-            echo "Error. La opción ingresada no es válida\n";
-        }
-    } while ($valido == false);
-
-    do {
-        echo "Eliminar el responsable también eliminará los viajes relacionados a ella\ny por consecuencia los pasajeros asignados al mismo\nDeséa continuar? (S/N): ";
-        $respuestaEliminarResponsable = trim(fgets(STDIN));
-        if (strtoupper($respuestaEliminarResponsable) == "S") {
-            $objViaje = new viaje();
-            $bdViajesABorrar = $objViaje->listar("rnumeroempleado=". $responsableElegido->getRNumeroEmpleado());
-            $objPasajero = new pasajero();
-            for ($i=0;$i<count($bdViajesABorrar);$i++) {
-                $bdPasajerosABorrar = $objPasajero->listar("idviaje=". $bdViajesABorrar[$i]->getIdViaje());
-                for ($j=0;$j<count($bdPasajerosABorrar);$j++) {
-                    $bdPasajerosABorrar[$j]->eliminar();
-                    echo "Pasajero Eliminado\n";
+        } while ($valido == false);
+    
+        do {
+            echo "Eliminar el responsable también eliminará los viajes relacionados a ella\ny por consecuencia los pasajeros asignados al mismo\nDeséa continuar? (S/N): ";
+            $respuestaEliminarResponsable = trim(fgets(STDIN));
+            if (strtoupper($respuestaEliminarResponsable) == "S") {
+                $objViaje = new viaje();
+                $bdViajesABorrar = $objViaje->listar("rnumeroempleado=". $responsableElegido->getRNumeroEmpleado());
+                $objPasajero = new pasajero();
+                for ($i=0;$i<count($bdViajesABorrar);$i++) {
+                    $bdPasajerosABorrar = $objPasajero->listar("idviaje=". $bdViajesABorrar[$i]->getIdViaje());
+                    for ($j=0;$j<count($bdPasajerosABorrar);$j++) {
+                        $bdPasajerosABorrar[$j]->eliminar();
+                        echo "Pasajero Eliminado\n";
+                    }
+                    $bdViajesABorrar[$i]->eliminar();
+                    echo "Viaje Eliminado\n";
                 }
-                $bdViajesABorrar[$i]->eliminar();
-                echo "Viaje Eliminado\n";
+                $responsableElegido->eliminar();
+                echo "Responsable Eliminado\n";
             }
-            $responsableElegido->eliminar();
-            echo "Responsable Eliminado\n";
-        }
-        elseif (strtoupper($respuestaEliminarResponsable) == "N") {
-            echo "Operación cancelada, no se eliminó nada\n";
-        }
-        else {
-            echo "Opción incorrecta\n";
-        }
-    } while (strtoupper($respuestaEliminarResponsable) != "S" && strtoupper($respuestaEliminarResponsable) != "N");
+            elseif (strtoupper($respuestaEliminarResponsable) == "N") {
+                echo "Operación cancelada, no se eliminó nada\n";
+            }
+            else {
+                echo "Opción incorrecta\n";
+            }
+        } while (strtoupper($respuestaEliminarResponsable) != "S" && strtoupper($respuestaEliminarResponsable) != "N");
+    }
+
 }
 
 function eliminarPasajero() {
@@ -800,26 +909,32 @@ function eliminarPasajero() {
     $bdPasajeros = $objPasajero->listar("");
     $valido = false;
 
-    do {
-        echo "Seleccione el pasajero que deséa eliminar:\n===================================================\n";
-        listarPasajeros();
-        $pasajeroAEliminar = trim(fgets(STDIN));
-        if (is_numeric($pasajeroAEliminar)) {
-            if ($pasajeroAEliminar > 0 && $pasajeroAEliminar <= count($bdPasajeros)) {
-                $valido = true;
-                $pasajeroElegido = $bdPasajeros[$pasajeroAEliminar - 1];
+    if (count($bdPasajeros) == 0) {
+        echo "No hay pasajeros para eliminar\n";
+    }
+    else {
+        do {
+            echo "Seleccione el pasajero que deséa eliminar:\n===================================================\n";
+            listarPasajeros();
+            $pasajeroAEliminar = trim(fgets(STDIN));
+            if (is_numeric($pasajeroAEliminar)) {
+                if ($pasajeroAEliminar > 0 && $pasajeroAEliminar <= count($bdPasajeros)) {
+                    $valido = true;
+                    $pasajeroElegido = $bdPasajeros[$pasajeroAEliminar - 1];
+                }
+                else {
+                    echo "Error. Por favor ingrese una opción correcta\n";
+                }
             }
             else {
-                echo "Error. Por favor ingrese una opción correcta\n";
+                echo "Error. La opción ingresada no es válida\n";
             }
-        }
-        else {
-            echo "Error. La opción ingresada no es válida\n";
-        }
-    } while ($valido == false);
+        } while ($valido == false);
+    
+        $pasajeroElegido->eliminar();
+        echo "Pasajero Eliminado\n";
+    }
 
-    $pasajeroElegido->eliminar();
-    echo "Pasajero Eliminado\n";
 }
 
 // Menus Mostrar
@@ -832,11 +947,12 @@ function menuMostrar() {
         echo "2. Viajes\n";
         echo "3. Responsables\n";
         echo "4. Pasajeros\n";
+        echo "5. Mostrar Todo\n";
         echo "0. Volver\n";
         echo "Opción: ";
         $valor = trim(fgets(STDIN));
         if (is_numeric($valor)) {
-            if ($valor >= 0 && $valor < 5) {
+            if ($valor >= 0 && $valor < 6) {
                 $rtaValida = true;
             } 
             else {
@@ -894,6 +1010,40 @@ function listarResponsables() {
     echo $responsables;
 }
 
+function mostrarTodo() {
+    $objEmpresa = new empresa();
+    $bdEmpresas = $objEmpresa->listar("");
+    $objResponsable = new responsable();
+    $bdResponsables = $objResponsable->listar("");
+    $stringMostrarTodo = "";
+
+    for ($i=0;$i<count($bdEmpresas);$i++) {
+        $stringMostrarTodo .= "\n===================================================". $bdEmpresas[$i] . "\n===================================================\n";
+        $objViaje = new viaje();
+        $bdViajes = $objViaje->listar("idempresa=". $bdEmpresas[$i]->getIdEmpresa());
+        if (count($bdViajes) > 0) {
+            $stringMostrarTodo .= "Viajes de " . $bdEmpresas[$i]->getEmpNombre() . ":\n\n";
+            for ($j=0;$j<count($bdViajes);$j++) {
+                $stringMostrarTodo .= "Viaje Numero ". ($j+1). ":\n\n". $bdViajes[$j]. "\n\n";
+                $objPasajero = new pasajero();
+                $bdPasajeros = $objPasajero->listar("idviaje=". $bdViajes[$j]->getIdViaje());
+                if (count($bdPasajeros) > 0) {
+                    $stringMostrarTodo .= "Pasajeros del viaje:\n\n";
+                    for ($k=0;$k<count($bdPasajeros);$k++) {
+                        $stringMostrarTodo .= ($k+1). ". ". $bdPasajeros[$k]. "\n\n";
+                    }
+                }
+            }
+        }
+    }
+    $stringMostrarTodo .= "\n===================================================\n\nLista de responsables:\n\n";
+    for ($h=0;$h<count($bdResponsables);$h++) {
+        $stringMostrarTodo .= ($h+1). ". ". $bdResponsables[$h] . "\n\n";
+    }
+    $stringMostrarTodo .= "===================================================\n\n";
+    echo $stringMostrarTodo;
+}
+
 // Programa Principal
 
 do {
@@ -934,7 +1084,12 @@ do {
                     $bdViajesTemporales = $objViajeTemporal->listar("");
                     if (count($bdViajesTemporales) > 0) {
                         $objPasajeroCreado = agregarPasajeroElegirViaje();
-                        $objPasajeroCreado->insertar();
+                        if ($objPasajeroCreado == null) {
+                            echo "No se agregó ningún pasajero\n";
+                        }
+                        else {
+                            $objPasajeroCreado->insertar();
+                        }
                     }
                     else {
                         echo "No hay viajes disponibles, por favor cree uno\n";
@@ -950,16 +1105,44 @@ do {
             $respuestaMenuModificar = menuModificar();
             switch($respuestaMenuModificar) {
                 case 1:
-                    modificarEmpresa();
+                    $objEmpresaTemp = new empresa();
+                    $bdEmpresasTemp = $objEmpresaTemp->listar("");
+                    if (count($bdEmpresasTemp) > 0) {
+                        modificarEmpresa();
+                    }
+                    else {
+                        echo "No hay empresas para modificar\n";
+                    }
                     break;
                 case 2:
-                    modificarViaje();
+                    $objViajeTemp = new viaje();
+                    $bdViajeTemp = $objViajeTemp->listar("");
+                    if (count($bdViajeTemp) > 0) {
+                        modificarViaje();
+                    }
+                    else {
+                        echo "No hay viajes para modificar\n";
+                    }
                     break;
                 case 3:
-                    modificarResponsable();
+                    $objResponsableTemp = new responsable();
+                    $bdResponsablesTemp = $objResponsableTemp->listar("");
+                    if (count($bdResponsablesTemp) > 0) {
+                        modificarResponsable();
+                    }
+                    else {
+                        echo "No hay responsables para modificar\n";
+                    }
                     break;
                 case 4:
-                    modificarPasajero();
+                    $objPasajeroTemp = new pasajero();
+                    $bdPasajerosTemp = $objPasajeroTemp->listar("");
+                    if (count($bdPasajerosTemp) > 0) {
+                        modificarPasajero();
+                    }
+                    else {
+                        echo "No hay pasajeros para modificar\n";
+                    }
                     break;
                 case 0:
                     break;
@@ -1005,10 +1188,23 @@ do {
                 case 4:
                     listarPasajeros();
                     break;
+                case 5:
+                    mostrarTodo();
+                    break;
             }
             break;
         case 5:
-            precargarDatos();
+            $objEmpresaTemp = new empresa();
+            $dbEmpresaTemp = $objEmpresaTemp->listar("");
+            $objResponsableTemp = new responsable();
+            $dbResponsableTemp = $objResponsableTemp->listar("");
+            if ( count($dbEmpresaTemp) > 0 || count($dbResponsableTemp) > 0) {
+                echo "Ya hay datos cargados, si quiere cargar los de prueba borre los previos\n";
+            }
+            else {
+                precargarDatos();
+                echo "Datos de prueba cargados con éxitos\n";
+            }
             break;
         case 0:
             echo "Fin del programa";

@@ -119,14 +119,9 @@ class responsable
             if ($base->Ejecutar($consultaResponsables)) {
                 $arregloResponsable = array();
                 while ($row2 = $base->Registro()) {
-
-                    $NroEmp = $row2['rnumeroempleado'];
-                    $NroLic = $row2['rnumerolicencia'];
-                    $NomRes = $row2['rnombre'];
-                    $ApeRes = $row2['rapellido'];
-
+                    
                     $resp = new responsable();
-                    $resp->cargar($NroEmp, $NroLic, $NomRes, $ApeRes);
+                    $resp->Buscar($row2['rnumeroempleado']);
                     array_push($arregloResponsable, $resp);
                 }
             } else {

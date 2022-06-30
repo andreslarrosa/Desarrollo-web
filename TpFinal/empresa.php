@@ -106,12 +106,8 @@ class empresa
                 $arregloEmpresa = array();
                 while ($row2 = $base->Registro()) {
 
-                    $IdEmp = $row2['idempresa'];
-                    $EmpNom = $row2['enombre'];
-                    $EmpDire = $row2['edireccion'];
-
                     $empr = new empresa();
-                    $empr->cargar($IdEmp, $EmpNom, $EmpDire);
+                    $empr->Buscar($row2['idempresa']);
                     array_push($arregloEmpresa, $empr);
                 }
             } else {
